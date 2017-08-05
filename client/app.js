@@ -3,6 +3,26 @@
 
   console.log('App is running');
 
+  // WEBSOCKETS
+
+  var client = new BinaryClient('ws://' + location.hostname + ':3001');
+  var MIDIStream = null;
+
+  client.on('open', function () {
+    MIDIStream = client.createStream();
+    MIDIStream.on('data', handleReceiveAudioData);
+    MIDIStream.on('end', handleEndAudioStream);
+  });
+
+  function handleReceiveAudioData(data) {
+    console.log('receive audio data', data);
+  }
+
+  function handleEndAudioStream(data) {
+    console.log('end', data);
+  }
+
+  // MIDI access
   var midiAccess = null;
   navigator.requestMIDIAccess().then(onMidiAccessSuccess, onMidiAccessFailure);
 
@@ -24,6 +44,8 @@
 
   function handleMidiMessage(e) {
     console.log(e);
+    if (!MIDIStream || e.data[0] !== 0x90) return;
+    MIDIStream.write(e.data);
   }
 
 
