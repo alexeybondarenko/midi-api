@@ -18,7 +18,7 @@ app.get('/', (request, response) => {
   response.render('index');
 });
 
-app.listen(app.get('PORT'), (error) => {
+const server = app.listen(app.get('PORT'), (error) => {
   if (error) {
     console.log('Server started with an error', error);
     process.exit(1);
@@ -27,7 +27,8 @@ app.listen(app.get('PORT'), (error) => {
 });
 
 const socket = new binaryServer({
-  port: 3001,
+  server: server,
+  path: '/socket',
 });
 
 function playTone(tone, stream) {

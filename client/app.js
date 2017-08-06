@@ -18,7 +18,7 @@
   }
   // WEBSOCKETS
 
-  var client = new BinaryClient('ws://' + location.hostname + ':3001');
+  var client = new BinaryClient(location.origin.replace('http', 'ws').replace('https', 'ws') + '/socket');
   var MIDIStream = null;
 
   client.on('open', function () {
