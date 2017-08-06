@@ -3,6 +3,18 @@
 
   console.log('App is running');
 
+  // AUDIO CONTEXT
+
+  var context;
+  window.AudioContext = window.AudioContext || window.webkitAudioContext;
+  context = new AudioContext();
+
+  function playSound(audioBuffer) {
+    var source = context.createBufferSource();
+    source.buffer = audioBuffer;
+    source.connect(context.destination);
+    source.start(0);
+  }
   // WEBSOCKETS
 
   var client = new BinaryClient('ws://' + location.hostname + ':3001');
@@ -16,6 +28,7 @@
 
   function handleReceiveAudioData(data) {
     console.log('receive audio data', data);
+    context.decodeAudioData(data, playSound);
   }
 
   function handleEndAudioStream(data) {
@@ -43,8 +56,8 @@
   }
 
   function handleMidiMessage(e) {
-    console.log(e);
     if (!MIDIStream || e.data[0] !== 0x90) return;
+    console.log(e);
     MIDIStream.write(e.data);
   }
 

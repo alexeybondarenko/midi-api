@@ -1,6 +1,9 @@
 const Express = require('express');
 const ejs = require('ejs');
 const path = require('path');
+const fs = require('fs');
+
+const binaryServer = require('binaryjs').BinaryServer;
 
 const app = new Express();
 
@@ -21,4 +24,37 @@ app.listen(app.get('PORT'), (error) => {
     process.exit(1);
   }
   console.log(`Server started and is listening at http://localhost:${app.get('PORT')}`);
-})
+});
+
+const socket = new binaryServer({
+  port: 3001,
+});
+
+function playTone(tone, stream) {
+  if (tone > 61 || tone < 1) {
+    console.log('undefined tone', tone);
+    return;
+  }
+
+  const file = fs.createReadStream(path.resolve(__dirname, 'wav', `${tone}.wav`));
+  file.pipe(stream);
+  file.on('end', () => {
+    file.unpipe(stream);
+  });
+
+  return file;
+}
+socket.on('connection', (client) => {
+  client.on('stream', (stream, meta) => {
+
+    stream.on('data', (data) => {
+      console.log(data);
+      const tone = data.readInt8(1);
+      playTone(tone, stream);
+    });
+
+    stream.on('end', () => {
+      console.log('end of stream');
+    });
+  });
+});
