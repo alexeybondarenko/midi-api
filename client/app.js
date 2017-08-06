@@ -14,6 +14,7 @@
     source.buffer = audioBuffer;
     source.connect(context.destination);
     source.start(0);
+    console.timeEnd('send');
   }
   // WEBSOCKETS
 
@@ -58,6 +59,7 @@
   function handleMidiMessage(e) {
     if (!MIDIStream || e.data[0] !== 0x90) return;
     console.log(e);
+    console.time('send');
     MIDIStream.write(e.data);
   }
 
