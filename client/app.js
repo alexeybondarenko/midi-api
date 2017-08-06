@@ -23,9 +23,12 @@
 
   client.on('open', function () {
     MIDIStream = client.createStream();
-    MIDIStream.on('data', handleReceiveAudioData);
-    MIDIStream.on('end', handleEndAudioStream);
   });
+
+  client.on('stream', function (stream) {
+    stream.on('data', handleReceiveAudioData);
+    stream.on('end', handleEndAudioStream);
+  })
 
   function handleReceiveAudioData(data) {
     console.log('receive audio data', data);

@@ -50,7 +50,7 @@ socket.on('connection', (client) => {
     stream.on('data', (data) => {
       console.log(data);
       const tone = data.readInt8(1);
-      playTone(tone, stream);
+      Object.keys(socket.clients).map(i => playTone(tone, socket.clients[i].createStream()));
     });
 
     stream.on('end', () => {
